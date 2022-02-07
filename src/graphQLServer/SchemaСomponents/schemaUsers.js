@@ -1,9 +1,6 @@
-module.exports = `
-  type User {
-    _id: ID
-    login: String
-    password: String
-  }
+const { buildSchema } = require("graphql");
+
+module.exports = buildSchema(`
   type Token {
     login: String!
     token: String!
@@ -14,8 +11,10 @@ module.exports = `
     password: String!
   }
 
+  type Query {
+    authorizationUser(input: UserInput!): Token!
+  } 
   type Mutation {
     addNewUser(input: UserInput!): Token!
-    authorizationUser(input: UserInput!): Token!
   }
-`;
+`);

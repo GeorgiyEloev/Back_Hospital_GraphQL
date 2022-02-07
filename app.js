@@ -1,11 +1,12 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const { graphqlHTTP } = require("express-graphql");
-const schema = require("./src/graphQLServer/schema");
+const schemaRecords = require("./src/graphQLServer/SchemaСomponents/schemaRecords");
+const schemaUsers = require("./src/graphQLServer/SchemaСomponents/schemaUsers");
 const resolvers = require("./src/graphQLServer/root/resolversRecord");
 const resolversUser = require("./src/graphQLServer/root/resolversUser");
-
 const apiReceptionRoutes = require("./src/modules/routes/record.router");
 const apiUserRoutes = require("./src/modules/routes/user.router");
 require("dotenv").config();
@@ -16,20 +17,39 @@ app.use(cors());
 
 mongoose.connect(UTL_BD);
 
-const dbConnection = mongoose.connection;
-dbConnection.on("error", (err) => console.log(`Connection error: ${err}`));
-dbConnection.once("open", () => console.log("Connected to DB!"));
+app.all("/record/*", (req, res, next) => {
+  const token = req.headers.authorization;
+  jwt.verify(token, process.env.JWT_KEY, (err, data) => {
+    if (err) {
+      res.status(401).send("Error, corrupted token!!!");
+    } else {
+      req.userId = data._id;
+      next();
+    }
+  });
+});
 
 app.use(
-  "/graphql",
+  "/record/graphql",
   graphqlHTTP({
     graphiql: true,
-    schema,
-    rootValue: { ...resolvers, ...resolversUser },
+    schema: schemaRecords,
+    rootValue: resolvers,
   })
 );
 
-app.use(express.json());
+app.use(
+  "/user/graphql",
+  graphqlHTTP({
+    graphiql: true,
+    schema: schemaUsers,
+    rootValue: resolversUser,
+  })
+);
+
+// app.use(express.json());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/record/", apiReceptionRoutes);
 app.use("/user/", apiUserRoutes);
 

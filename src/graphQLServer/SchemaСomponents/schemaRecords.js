@@ -1,4 +1,6 @@
-module.exports = `
+const { buildSchema } = require("graphql");
+
+module.exports = buildSchema(`
   type Record {
     _id: ID
     userId: ID
@@ -23,11 +25,11 @@ module.exports = `
   }
 
   type Query {
-    getAllRecords(token: String!): [Record]
+    getAllRecords: [Record]
   }  
   type Mutation {
-    addNewRecord(input: RecordInput!, token: String!): [Record]
-    removeRecord(_id: ID!, token: String!): [Record]
-    changeRecord(input: RecordChange!, token: String!): [Record]
+    addNewRecord(input: RecordInput!): [Record]
+    removeRecord(_id: ID! ): [Record]
+    changeRecord(input: RecordChange!): [Record]
   }
-`;
+`);
