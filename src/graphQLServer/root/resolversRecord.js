@@ -1,102 +1,105 @@
-const User = require("../../db/models/user/userSchema");
 const Record = require("../../db/models/reception/recordSchema");
 
 const resolvers = {
-  getAllRecords: ({}, req) => {
-    try {
-      const userId = req.userId;
+  Query: {
+    getAllRecords: ({}, req, res) => {
+      try {
+        const userId = req.userId;
 
-      return Record.find({ userId }, [
-        "_id",
-        "patient",
-        "doctor",
-        "date",
-        "symptoms",
-      ]);
-    } catch (err) {
-      return err;
-    }
-  },
-  addNewRecord: async ({ input }, req) => {
-    try {
-      const { patient, doctor, date, symptoms } = input;
-      const userId = req.userId;
-
-      let dateNew;
-      new Date(date).toString() !== "Invalid Date" &&
-      new Date(date) >= new Date("01-01-2021") &&
-      new Date(date) <= new Date("12-31-2022")
-        ? (dateNew = date)
-        : (dateNew = new Date());
-
-      const record = new Record({
-        userId,
-        patient,
-        doctor,
-        date: dateNew,
-        symptoms,
-      });
-
-      await record.save();
-
-      return Record.find({ userId }, [
-        "_id",
-        "patient",
-        "doctor",
-        "date",
-        "symptoms",
-      ]);
-    } catch (err) {
-      return err;
-    }
-  },
-  removeRecord: async ({ _id }, req) => {
-    try {
-      const userId = req.userId;
-
-      await Record.findByIdAndRemove(_id);
-
-      return Record.find({ userId }, [
-        "_id",
-        "patient",
-        "doctor",
-        "date",
-        "symptoms",
-      ]);
-    } catch (err) {
-      return err;
-    }
-  },
-  changeRecord: async ({ input }, req) => {
-    try {
-      const { _id, patient, doctor, date, symptoms } = input;
-      const userId = req.userId;
-      const recordUpdate = {};
-
-      new Date(date).toString() !== "Invalid Date" &&
-      new Date(date) >= new Date("01-01-2021") &&
-      new Date(date) <= new Date("12-31-2022")
-        ? (recordUpdate.date = date)
-        : date;
-
-      const checkKeys = ["patient", "doctor", "symptoms"];
-      const inputObj = { patient, doctor, symptoms };
-      for (let i in checkKeys) {
-        checkUpdate(checkKeys[i], inputObj, recordUpdate);
+        return Record.find({ userId }, [
+          "_id",
+          "patient",
+          "doctor",
+          "date",
+          "symptoms",
+        ]);
+      } catch (err) {
+        return err;
       }
+    },
+  },
+  Mutation: {
+    addNewRecord: async ({ input }, req) => {
+      try {
+        const { patient, doctor, date, symptoms } = input;
+        const userId = req.userId;
 
-      await Record.findByIdAndUpdate(_id, recordUpdate);
+        let dateNew;
+        new Date(date).toString() !== "Invalid Date" &&
+        new Date(date) >= new Date("01-01-2021") &&
+        new Date(date) <= new Date("12-31-2022")
+          ? (dateNew = date)
+          : (dateNew = new Date());
 
-      return Record.find({ userId }, [
-        "_id",
-        "patient",
-        "doctor",
-        "date",
-        "symptoms",
-      ]);
-    } catch (err) {
-      return err;
-    }
+        const record = new Record({
+          userId,
+          patient,
+          doctor,
+          date: dateNew,
+          symptoms,
+        });
+
+        await record.save();
+
+        return Record.find({ userId }, [
+          "_id",
+          "patient",
+          "doctor",
+          "date",
+          "symptoms",
+        ]);
+      } catch (err) {
+        return err;
+      }
+    },
+    removeRecord: async ({ _id }, req) => {
+      try {
+        const userId = req.userId;
+
+        await Record.findByIdAndRemove(_id);
+
+        return Record.find({ userId }, [
+          "_id",
+          "patient",
+          "doctor",
+          "date",
+          "symptoms",
+        ]);
+      } catch (err) {
+        return err;
+      }
+    },
+    changeRecord: async ({ input }, req) => {
+      try {
+        const { _id, patient, doctor, date, symptoms } = input;
+        const userId = req.userId;
+        const recordUpdate = {};
+
+        new Date(date).toString() !== "Invalid Date" &&
+        new Date(date) >= new Date("01-01-2021") &&
+        new Date(date) <= new Date("12-31-2022")
+          ? (recordUpdate.date = date)
+          : date;
+
+        const checkKeys = ["patient", "doctor", "symptoms"];
+        const inputObj = { patient, doctor, symptoms };
+        for (let i in checkKeys) {
+          checkUpdate(checkKeys[i], inputObj, recordUpdate);
+        }
+
+        await Record.findByIdAndUpdate(_id, recordUpdate);
+
+        return Record.find({ userId }, [
+          "_id",
+          "patient",
+          "doctor",
+          "date",
+          "symptoms",
+        ]);
+      } catch (err) {
+        return err;
+      }
+    },
   },
 };
 

@@ -1,6 +1,7 @@
 const { buildSchema } = require("graphql");
+const { gql } = require("apollo-server");
 
-module.exports = buildSchema(`
+module.exports = gql`
   type Token {
     login: String!
     token: String!
@@ -13,8 +14,8 @@ module.exports = buildSchema(`
 
   type Query {
     authorizationUser(input: UserInput!): Token!
-  } 
+  }
   type Mutation {
     addNewUser(input: UserInput!): Token!
   }
-`);
+`;
