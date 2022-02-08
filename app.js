@@ -6,14 +6,16 @@ const mongoose = require("mongoose");
 const { graphqlHTTP } = require("express-graphql");
 const schemaUsers = require("./src/graphQLServer/SchemaСomponents/schemaUsers");
 const typeDefs = require("./src/graphQLServer/schema");
-const resolversRecord = require("./src/graphQLServer/root/resolversRecord");
-const resolversUser = require("./src/graphQLServer/root/resolversUser");
+const resolvers = require("./src/graphQLServer/root/resolver");
 const apiReceptionRoutes = require("./src/modules/routes/record.router");
 const apiUserRoutes = require("./src/modules/routes/user.router");
 require("dotenv").config();
 const { PORT, UTL_BD } = process.env;
-const resolvers = { ...resolversRecord, ...resolversUser };
-const app = new ApolloServer({ typeDefs, resolvers });
+const app = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req }) => ({ req }),
+});
 
 // app.use(cors());
 

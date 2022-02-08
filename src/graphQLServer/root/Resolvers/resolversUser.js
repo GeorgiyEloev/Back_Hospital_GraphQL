@@ -1,14 +1,13 @@
 const crypto = require("crypto");
 require("dotenv").config();
-const User = require("../../db/models/user/userSchema");
-const tokenService = require("../../modules/service/token-service");
+const User = require("../../../db/models/user/userSchema");
+const tokenService = require("../../../modules/service/token-service");
 
 const { HASH_ALGOR, HASH_BASE } = process.env;
 
 const resolversUser = {
   Query: {
-    authorizationUser(parent, args) {
-      console.log(args);
+    authorizationUser: (_, args) => {
       const { login, password } = args.input;
       return User.findOne({ login })
         .then((result) => {
@@ -44,8 +43,8 @@ const resolversUser = {
     },
   },
   Mutation: {
-    addNewUser: ({ input }) => {
-      const { login, password } = input;
+    addNewUser: (_, args) => {
+      const { login, password } = args.input;
       return User.findOne({ login })
         .then((result) => {
           if (!result) {

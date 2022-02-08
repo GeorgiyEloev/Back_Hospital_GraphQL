@@ -1,8 +1,8 @@
-const Record = require("../../db/models/reception/recordSchema");
+const Record = require("../../../db/models/reception/recordSchema");
 
 const resolvers = {
   Query: {
-    getAllRecords: ({}, req, res) => {
+    async getAllRecords(_, args, context) {
       try {
         const userId = req.userId;
 
@@ -21,6 +21,7 @@ const resolvers = {
   Mutation: {
     addNewRecord: async ({ input }, req) => {
       try {
+        console.log(req);
         const { patient, doctor, date, symptoms } = input;
         const userId = req.userId;
 
