@@ -1,23 +1,25 @@
-const express = require("express");
+// const express = require("express");
 const { ApolloServer } = require("apollo-server");
-const cors = require("cors");
-const jwt = require("jsonwebtoken");
+// const cors = require("cors");
+// const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const { graphqlHTTP } = require("express-graphql");
-const schemaUsers = require("./src/graphQLServer/SchemaСomponents/schemaUsers");
-const typeDefs = require("./src/graphQLServer/schema");
+const { applyMiddleware } = require("graphql-middleware");
+const schema = require("./src/graphQLServer/schema");
 const resolvers = require("./src/graphQLServer/root/resolver");
-const apiReceptionRoutes = require("./src/modules/routes/record.router");
-const apiUserRoutes = require("./src/modules/routes/user.router");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
+// const apiReceptionRoutes = require("./src/modules/routes/record.router");
+// const apiUserRoutes = require("./src/modules/routes/user.router");
 require("dotenv").config();
 const { PORT, UTL_BD } = process.env;
+
+const permissions = require("./src/graphQLServer/root/tokenError");
+
+const newSchema = makeExecutableSchema({ typeDefs: schema, resolvers });
+
 const app = new ApolloServer({
-  typeDefs,
-  resolvers,
+  schema: applyMiddleware(newSchema, permissions),
   context: ({ req }) => ({ req }),
 });
-
-// app.use(cors());
 
 mongoose.connect(UTL_BD);
 

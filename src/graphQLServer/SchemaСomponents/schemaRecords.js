@@ -1,6 +1,4 @@
-const { buildSchema } = require("graphql");
-
-module.exports = buildSchema(`
+module.exports = `
   type Record {
     _id: ID
     userId: ID
@@ -32,4 +30,4 @@ module.exports = buildSchema(`
     removeRecord(_id: ID! ): [Record]
     changeRecord(input: RecordChange!): [Record]
   }
-`);
+`;

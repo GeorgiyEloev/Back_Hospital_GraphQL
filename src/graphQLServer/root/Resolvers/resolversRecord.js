@@ -2,10 +2,8 @@ const Record = require("../../../db/models/reception/recordSchema");
 
 const resolvers = {
   Query: {
-    async getAllRecords(_, args, context) {
+    getAllRecords: (_, { userId }) => {
       try {
-        const userId = req.userId;
-
         return Record.find({ userId }, [
           "_id",
           "patient",
@@ -19,11 +17,9 @@ const resolvers = {
     },
   },
   Mutation: {
-    addNewRecord: async ({ input }, req) => {
+    addNewRecord: async (_, { userId, input }) => {
       try {
-        console.log(req);
         const { patient, doctor, date, symptoms } = input;
-        const userId = req.userId;
 
         let dateNew;
         new Date(date).toString() !== "Invalid Date" &&
@@ -53,10 +49,8 @@ const resolvers = {
         return err;
       }
     },
-    removeRecord: async ({ _id }, req) => {
+    removeRecord: async (_, { userId, _id }) => {
       try {
-        const userId = req.userId;
-
         await Record.findByIdAndRemove(_id);
 
         return Record.find({ userId }, [
@@ -70,10 +64,9 @@ const resolvers = {
         return err;
       }
     },
-    changeRecord: async ({ input }, req) => {
+    changeRecord: async (_, { userId, input }) => {
       try {
         const { _id, patient, doctor, date, symptoms } = input;
-        const userId = req.userId;
         const recordUpdate = {};
 
         new Date(date).toString() !== "Invalid Date" &&
