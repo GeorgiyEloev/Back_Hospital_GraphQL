@@ -8,11 +8,9 @@ module.exports = `
     login: String!
     password: String!
   }
-
-  type Query {
-    authorizationUser(input: UserInput!): Token!
-  }
+  
   type Mutation {
+    authorizationUser(input: UserInput!): Token!
     addNewUser(input: UserInput!): Token!
   }
 `;

@@ -1,12 +1,19 @@
 const crypto = require("crypto");
+const { AuthenticationError } = require("apollo-server");
 require("dotenv").config();
+const {
+  ERR_AUTH,
+  ERR_REG,
+  ERR_FIND,
+  ERR_SAVE,
+} = require("../../../const/AuthError");
 const User = require("../../../db/models/user/userSchema");
 const tokenService = require("../../service/token-service");
 
 const { HASH_ALGOR, HASH_BASE } = process.env;
 
 const resolversUser = {
-  Query: {
+  Mutation: {
     authorizationUser: (_, args) => {
       const { login, password } = args.input;
       return User.findOne({ login })
@@ -25,24 +32,16 @@ const resolversUser = {
               const token = tokenService.generateToken({ ...userNotPassword });
               return { login, token };
             } else {
-              return new Error(
-                '{ status: 401, text: "Error, invalid password!!!" }'
-              );
+              return new Error(ERR_AUTH);
             }
           } else {
-            return new Error(
-              '{ status: 404, text: "Error, the login does not exist!!!" }'
-            );
+            return new Error(ERR_AUTH);
           }
         })
         .catch((err) => {
-          return new Error(
-            '{ status: 419, text: "Error. An error occurred during the search!!!" }'
-          );
+          return new Error(ERR_FIND);
         });
     },
-  },
-  Mutation: {
     addNewUser: (_, args) => {
       const { login, password } = args.input;
       return User.findOne({ login })
@@ -67,20 +66,14 @@ const resolversUser = {
                 return { login, token };
               })
               .catch((err) => {
-                return new Error(
-                  '{ status: 421, text: "Error, user does not save!!!" }'
-                );
+                return new Error(ERR_SAVE);
               });
           } else {
-            return new Error(
-              '{ status: 404, text: "Error, login is busy!!!" }'
-            );
+            return new Error(ERR_REG);
           }
         })
         .catch((err) => {
-          return new Error(
-            '{ status: 419, text: "Error. An error occurred during the search!!!" }'
-          );
+          return new Error(ERR_FIND);
         });
     },
   },

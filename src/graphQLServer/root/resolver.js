@@ -4,7 +4,6 @@ const resolversUser = require("./Resolvers/resolversUser");
 const resolvers = {
   Query: {
     ...resolversRecord.Query,
-    ...resolversUser.Query,
   },
   Mutation: {
     ...resolversRecord.Mutation,
