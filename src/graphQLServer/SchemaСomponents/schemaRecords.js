@@ -1,7 +1,6 @@
 module.exports = `
   type Record {
     _id: ID
-    userId: ID
     patient: String
     doctor: String
     date: String

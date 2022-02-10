@@ -23,41 +23,31 @@ const isAuthenticated = (authHeader) => {
     throw new Error('Должен быть предоставлен HTTP-заголовок "Authorization"');
   }
 };
+
+const protectRouter = async (resolve, parent, args, context, info) => {
+  const argsWithDefault = {
+    userId: isAuthenticated(context.req.headers.authorization),
+    ...args,
+  };
+  const result = await resolve(parent, argsWithDefault, context, info);
+  return result;
+};
+
 const permissions = {
   Query: {
-    getAllRecords: async (resolve, parent, args, context, info) => {
-      const argsWithDefault = {
-        userId: isAuthenticated(context.req.headers.authorization),
-        ...args,
-      };
-      const result = await resolve(parent, argsWithDefault, context, info);
-      return result;
+    getAllRecords: (resolve, parent, args, context, info) => {
+      return protectRouter(resolve, parent, args, context, info);
     },
   },
   Mutation: {
-    addNewRecord: async (resolve, parent, args, context, info) => {
-      const argsWithDefault = {
-        userId: isAuthenticated(context.req.headers.authorization),
-        ...args,
-      };
-      const result = await resolve(parent, argsWithDefault, context, info);
-      return result;
+    addNewRecord: (resolve, parent, args, context, info) => {
+      return protectRouter(resolve, parent, args, context, info);
     },
-    removeRecord: async (resolve, parent, args, context, info) => {
-      const argsWithDefault = {
-        userId: isAuthenticated(context.req.headers.authorization),
-        ...args,
-      };
-      const result = await resolve(parent, argsWithDefault, context, info);
-      return result;
+    removeRecord: (resolve, parent, args, context, info) => {
+      return protectRouter(resolve, parent, args, context, info);
     },
-    changeRecord: async (resolve, parent, args, context, info) => {
-      const argsWithDefault = {
-        userId: isAuthenticated(context.req.headers.authorization),
-        ...args,
-      };
-      const result = await resolve(parent, argsWithDefault, context, info);
-      return result;
+    changeRecord: (resolve, parent, args, context, info) => {
+      return protectRouter(resolve, parent, args, context, info);
     },
   },
 };
